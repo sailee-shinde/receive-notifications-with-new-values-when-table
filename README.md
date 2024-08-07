@@ -1,3 +1,26 @@
+USE [MyDatabase];
+
+-- Create a message type
+CREATE MESSAGE TYPE [MyMessageType]
+VALIDATION = NONE;
+
+-- Create a contract
+CREATE CONTRACT [MyContract]
+([MyMessageType] SENT BY INITIATOR);
+
+-- Create a queue
+CREATE QUEUE [MyQueue];
+
+-- Create a service
+CREATE SERVICE [MyService]
+ON QUEUE [MyQueue]
+([MyContract]);
+
+-- Grant permissions
+GRANT RECEIVE ON [MyQueue] TO [john_doe];
+GRANT SEND ON SERVICE::[MyService] TO [john_doe];
+
+
 To get notifications when data is inserted into a database table from a .NET Console application, you can follow these general steps:
 
 Database Setup: Ensure your database is set up to support notifications. For SQL Server, you can use features like SQL Server Service Broker or SQL Dependency to receive notifications.
