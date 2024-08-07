@@ -1,3 +1,75 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using SqlTableDependency;
+using SqlTableDependency.SqlClient;
+using SqlTableDependency.EventArgs;
+
+namespace YourNamespace
+{
+    public class Worker : BackgroundService
+    {
+        private readonly ILogger<Worker> _logger;
+        private SqlTableDependency<YourModel> _sqlTableDependency;
+
+        public Worker(ILogger<Worker> logger)
+        {
+            _logger = logger;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+
+            StartSqlTableDependency();
+
+            stoppingToken.Register(() =>
+            {
+                _logger.LogInformation("Cancellation requested, stopping SqlTableDependency.");
+                StopSqlTableDependency();
+            });
+
+            await Task.CompletedTask;
+        }
+
+        private void StartSqlTableDependency()
+        {
+            var connectionString = "Your SQL Server connection string here";
+            _sqlTableDependency = new SqlTableDependency<YourModel>(connectionString);
+            _sqlTableDependency.OnChanged += TableDependency_OnChanged;
+            _sqlTableDependency.OnError += TableDependency_OnError;
+            _sqlTableDependency.Start();
+            _logger.LogInformation("SqlTableDependency started.");
+        }
+
+        private void StopSqlTableDependency()
+        {
+            _sqlTableDependency?.Stop();
+            _logger.LogInformation("SqlTableDependency stopped.");
+        }
+
+        private void TableDependency_OnChanged(object sender, RecordChangedEventArgs<YourModel> e)
+        {
+            var changedEntity = e.Entity;
+            _logger.LogInformation("DML operation: {operation}, ID: {id}", e.ChangeType, changedEntity.Id);
+            // Handle the change
+        }
+
+        private void TableDependency_OnError(object sender, ErrorEventArgs e)
+        {
+            _logger.LogError("Error: {message}", e.Error.Message);
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Worker stopping at: {time}", DateTimeOffset.Now);
+            StopSqlTableDependency();
+            await base.StopAsync(cancellationToken);
+        }
+    }
+}
 USE [YourDatabaseName];
 SELECT name AS UserName
 FROM sys.database_principals
