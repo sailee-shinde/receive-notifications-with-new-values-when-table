@@ -1,3 +1,7 @@
+USE [YourDatabaseName];
+SELECT name AS UserName
+FROM sys.database_principals
+WHERE type_desc = 'SQL_USER';
 USE [MyDatabase];
 
 -- Create a message type
