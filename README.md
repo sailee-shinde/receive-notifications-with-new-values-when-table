@@ -1,3 +1,29 @@
+using DataLayer.Data;
+using Microsoft.EntityFrameworkCore;
+using User_Status_Update;
+using User_Status_Update.Repository;
+
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json").Build();
+
+IHost host = Host.CreateDefaultBuilder(args)
+    .UseWindowsService()
+    .ConfigureServices(services =>
+    {
+        services.AddDbContext<EcommerceContext>(opt=>
+        {
+            opt.UseSqlServer(configuration.GetConnectionString("Db"));
+        });
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddHostedService<UserService>();
+    })
+    .Build();
+
+await host.RunAsync();
+
+
+
+
 class Program {
     static async Task Main(string[] args) {
         IHost Host = CreateHostBuilder(args).Build();
@@ -14,17 +40,6 @@ class Program {
             q.UseMicrosoftDependencyInjectionJobFactory();
             // Create a "key" for the job
             var jobKey = new JobKey("Task1");
-            // Register the job with the DI container
-            q.AddJob < Task1 > (opts => opts.WithIdentity(jobKey));
-            // Create a trigger for the job
-            q.AddTrigger(opts => opts.ForJob(jobKey) // link to the Task1
-                .WithIdentity("Task1-trigger") // give the trigger a unique name
-                .WithCronSchedule("0/5 * * * * ?")); // run every 5 seconds
-        });
-        // Add the Quartz.NET hosted service
-        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-    }
-}
 using System;
 using System.Threading;
 using System.Threading.Tasks;
