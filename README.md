@@ -1,3 +1,17 @@
+public static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .UseSerilog()
+        .UseWindowsService()
+        .ConfigureServices((hostContext, services) =>
+        {
+            //Logger configuration
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration).CreateLogger();
+            services.AddHostedService<Worker>();
+        });
+
+
+
+
 using DataLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using User_Status_Update;
