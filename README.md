@@ -1,3 +1,21 @@
+using SampleService;
+
+var host = Host.CreateDefaultBuilder(args)
+    .UseWindowsService(options => {
+        options.ServiceName = "SampleService";
+    })
+    .ConfigureServices((hostContext, services) =>
+    {
+        services.AddHostedService<Worker>();
+    })
+    .Build();
+
+host.Run();
+
+
+
+
+
 public static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)
         .UseSerilog()
