@@ -1,3 +1,50 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using NLog;
+using NLog.Extensions.Logging;
+using System.IO;
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            })
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                logging.AddNLog();
+            })
+            .ConfigureServices((hostContext, services) =>
+            {
+                var loggingConfig = hostContext.Configuration.GetSection("Logging");
+                var logPath = loggingConfig["LogPath"];
+
+                var nlogConfig = new NLog.Config.LoggingConfiguration();
+                NLog.LogManager.Configuration = nlogConfig;
+                NLog.LogManager.Configuration.Variables["logPath"] = logPath;
+
+                services.AddHostedService<Worker>();
+            })
+            .UseWindowsService();
+}
+
+
+
+
+
+
+
 public class Program
 {
     public static void Main(string[] args)
