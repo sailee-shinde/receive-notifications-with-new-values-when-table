@@ -1,5 +1,53 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class Worker : BackgroundService
+{
+    private readonly ILogger<Worker> _logger;
+
+    public Worker(ILogger<Worker> logger)
+    {
+        _logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Worker starting at: {time}", DateTimeOffset.Now);
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            await Task.Delay(1000, stoppingToken);
+        }
+
+        _logger.LogInformation("Worker stopping at: {time}", DateTimeOffset.Now);
+    }
+
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Worker is starting.");
+        return base.StartAsync(cancellationToken);
+    }
+
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Worker is stopping.");
+        return base.StopAsync(cancellationToken);
+    }
+}
+
+
+
+
+
+
+
+
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using NLog;
