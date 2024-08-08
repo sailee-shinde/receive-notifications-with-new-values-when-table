@@ -1,3 +1,19 @@
+int retries = 3;
+while (retries > 0)
+{
+    var obj = dbContext.FindObjectById(126405);
+    if (obj != null)
+        break;
+    retries--;
+    await Task.Delay(500); // Short delay before retrying
+}
+
+
+
+
+
+
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
