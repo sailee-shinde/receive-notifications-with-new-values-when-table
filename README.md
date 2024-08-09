@@ -1,3 +1,17 @@
+private DateTime _lastTriggerTime = DateTime.MinValue;
+private readonly TimeSpan _throttleInterval = TimeSpan.FromSeconds(5);
+
+void OnChange(object sender, SqlNotificationEventArgs e)
+{
+    var now = DateTime.UtcNow;
+    if (now - _lastTriggerTime < _throttleInterval) return;
+
+    _lastTriggerTime = now;
+    _ = HandleChangeAsync();
+}
+
+
+
 To control log entries within an asynchronous flow and avoid repeated log entries, you can follow these steps in your Program.cs file. I'll guide you through creating a simple console application in C# that demonstrates how to manage asynchronous logging effectively.
 
 Step 1: Set Up Your Console Application
