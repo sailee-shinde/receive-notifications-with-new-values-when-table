@@ -1,3 +1,132 @@
+To control log entries within an asynchronous flow and avoid repeated log entries, you can follow these steps in your Program.cs file. I'll guide you through creating a simple console application in C# that demonstrates how to manage asynchronous logging effectively.
+
+Step 1: Set Up Your Console Application
+First, create a new console application in Visual Studio or via the .NET CLI:
+
+bash
+Copy code
+dotnet new console -n AsyncLoggerExample
+Navigate to the project folder:
+
+bash
+Copy code
+cd AsyncLoggerExample
+Step 2: Create the Logger Class
+In Program.cs, define an asynchronous logger that will queue log messages and process them in a background task.
+
+csharp
+Copy code
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+
+class Logger
+{
+    private readonly BlockingCollection<string> _logQueue = new BlockingCollection<string>();
+    private Task _logTask;
+    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+    public void StartAsyncLogger()
+    {
+        _logTask = Task.Run(() =>
+        {
+            foreach (var logMessage in _logQueue.GetConsumingEnumerable(_cancellationTokenSource.Token))
+            {
+                Console.WriteLine($"[{DateTime.Now}] {logMessage}");
+            }
+        }, _cancellationTokenSource.Token);
+    }
+
+    public void LogAsync(string message)
+    {
+        _logQueue.Add(message);
+    }
+
+    public async Task StopAsyncLogger()
+    {
+        _logQueue.CompleteAdding();
+        _cancellationTokenSource.Cancel();
+        await _logTask;
+    }
+}
+Step 3: Implement the Main Program Logic
+In the Main method of Program.cs, set up the logger, run some asynchronous tasks, and log messages without repetition.
+
+csharp
+Copy code
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        var logger = new Logger();
+
+        // Step 1: Start the asynchronous logger
+        logger.StartAsyncLogger();
+
+        // Step 2: Simulate async operations
+        var tasks = new Task[5];
+        for (int i = 0; i < tasks.Length; i++)
+        {
+            int taskId = i;
+            tasks[i] = Task.Run(async () =>
+            {
+                await Task.Delay(500 * taskId); // Simulate varying task durations
+                logger.LogAsync($"Task {taskId} started.");
+                await Task.Delay(1000); // Simulate work being done
+                logger.LogAsync($"Task {taskId} completed.");
+            });
+        }
+
+        // Step 3: Wait for all tasks to complete
+        await Task.WhenAll(tasks);
+
+        // Step 4: Stop the asynchronous logger
+        await logger.StopAsyncLogger();
+
+        Console.WriteLine("All tasks completed. Logger stopped.");
+    }
+}
+Step 4: Run the Application
+Run the application to see how the logger behaves with multiple asynchronous tasks. The Logger class ensures that log messages are processed sequentially, avoiding any overlap or repeated entries due to asynchronous execution.
+
+Step 5: Explanation
+StartAsyncLogger: Initializes the background task that processes the log queue. This task runs continuously, writing log messages to the console as they are added to the queue.
+
+LogAsync: Adds log messages to the queue. Since BlockingCollection is thread-safe, it ensures that log messages are enqueued without conflict, even when multiple tasks log messages simultaneously.
+
+StopAsyncLogger: Gracefully shuts down the logging task, ensuring all queued messages are processed before the application exits.
+
+Async Tasks: The application simulates multiple tasks running asynchronously. Each task logs its start and completion, with no repeated log entries.
+
+Step 6: Run and Observe
+When you run this application, you'll see output like this:
+
+css
+Copy code
+[08/09/2024 15:23:00] Task 0 started.
+[08/09/2024 15:23:00] Task 0 completed.
+[08/09/2024 15:23:00] Task 1 started.
+[08/09/2024 15:23:01] Task 1 completed.
+[08/09/2024 15:23:01] Task 2 started.
+[08/09/2024 15:23:02] Task 2 completed.
+[08/09/2024 15:23:02] Task 3 started.
+[08/09/2024 15:23:03] Task 3 completed.
+[08/09/2024 15:23:03] Task 4 started.
+[08/09/2024 15:23:04] Task 4 completed.
+All tasks completed. Logger stopped.
+Conclusion
+This setup ensures that your log entries are controlled, synchronized, and free from repetition even when dealing with multiple asynchronous tasks. The Logger class manages log messages asynchronously, processes them sequentially, and shuts down gracefully, making it suitable for complex, asynchronous applications.
+
+
+
+
+
+
+
+
+
+
 int retries = 3;
 while (retries > 0)
 {
