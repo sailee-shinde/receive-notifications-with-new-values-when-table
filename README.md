@@ -1,3 +1,33 @@
+public class ThrottlingLog
+{
+    private static readonly Dictionary<string, DateTime> _logCache = new Dictionary<string, DateTime>();
+    private static readonly TimeSpan ThrottleDuration = TimeSpan.FromSeconds(10);
+
+    public static void LogInformation(string message)
+    {
+        lock (_logCache)
+        {
+            if (_logCache.ContainsKey(message))
+            {
+                if (DateTime.Now - _logCache[message] < ThrottleDuration)
+                {
+                    return; // Skip logging
+                }
+            }
+
+            _logCache[message] = DateTime.Now;
+            Log.Information(message); // Replace with your logging mechanism
+        }
+    }
+}
+
+
+
+
+
+
+
+
 private DateTime _lastTriggerTime = DateTime.MinValue;
 private readonly TimeSpan _throttleInterval = TimeSpan.FromSeconds(5);
 
