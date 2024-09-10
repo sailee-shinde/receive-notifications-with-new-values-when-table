@@ -1,3 +1,54 @@
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
+class RSADecryptionFromPEM
+{
+    public static void Main()
+    {
+        // Example PEM formatted private key
+        string pemPrivateKey = @"-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoIBAQDunOroIdZnP...
+...
+-----END PRIVATE KEY-----";
+
+        // The encrypted message (in Base64 format) that you want to decrypt
+        string encryptedBase64 = "your_encrypted_message_here";
+        byte[] encryptedBytes = Convert.FromBase64String(encryptedBase64);
+
+        // Convert the private key from PEM format to RSACryptoServiceProvider
+        RSACryptoServiceProvider rsa = GetRSACryptoServiceProviderFromPEM(pemPrivateKey);
+
+        // Decrypt the encrypted bytes
+        byte[] decryptedBytes = rsa.Decrypt(encryptedBytes, false);
+        string decryptedMessage = Encoding.UTF8.GetString(decryptedBytes);
+
+        // Output the decrypted message
+        Console.WriteLine("Decrypted message: " + decryptedMessage);
+    }
+
+    public static RSACryptoServiceProvider GetRSACryptoServiceProviderFromPEM(string pem)
+    {
+        // Strip the PEM header and footer
+        string privateKey = pem.Replace("-----BEGIN PRIVATE KEY-----", "")
+                               .Replace("-----END PRIVATE KEY-----", "")
+                               .Replace("\n", "")
+                               .Replace("\r", "")
+                               .Trim();
+
+        // Base64-decode the string to get the raw key bytes
+        byte[] keyBytes = Convert.FromBase64String(privateKey);
+
+        // Create a new instance of RSAParameters to import the private key
+        using (var rsa = new RSACryptoServiceProvider())
+        {
+            rsa.ImportPkcs8PrivateKey(keyBytes, out _);
+            return rsa;
+        }
+    }
+}
+
+
 public class ThrottlingLog
 {
     private static readonly Dictionary<string, DateTime> _logCache = new Dictionary<string, DateTime>();
