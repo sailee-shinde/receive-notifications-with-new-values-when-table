@@ -1,3 +1,42 @@
+
+import * as forge from 'node-forge';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  privateKeyPem: string = `-----BEGIN PRIVATE KEY-----
+  MIIEpAIBAAKCAQEA7NQkN7R/UhZyqGcW9Ax+L7Z+f+E4XVV/U6hR/dmI8F5Bq/UH
+  ...
+  -----END PRIVATE KEY-----`;
+
+  encryptedBase64: string = '...'; // Your base64-encoded encrypted data
+
+  decryptData() {
+    const privateKeyPem = this.privateKeyPem;
+    const encryptedBase64 = this.encryptedBase64;
+
+    // Convert PEM to forge private key
+    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+
+    // Convert base64-encoded encrypted data to binary
+    const encryptedBytes = forge.util.decode64(encryptedBase64);
+
+    // Decrypt the data
+    const decryptedBytes = privateKey.decrypt(encryptedBytes, 'RSA-OAEP');
+
+    // Convert decrypted bytes to string
+    const decryptedString = forge.util.decodeUtf8(decryptedBytes);
+
+    console.log('Decrypted data:', decryptedString);
+  }
+}
+
+
+
+
 using System;
 using System.IO;
 using Org.BouncyCastle.Crypto;
