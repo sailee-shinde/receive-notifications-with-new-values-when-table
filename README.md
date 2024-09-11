@@ -1,4 +1,39 @@
 using System;
+using System.IO;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Security;
+using System.Security.Cryptography;
+
+class Program
+{
+    static void Main()
+    {
+        string publicKeyPath = "path_to_public_key.pem";
+
+        using (StreamReader reader = new StreamReader(publicKeyPath))
+        {
+            PemReader pemReader = new PemReader(reader);
+            AsymmetricKeyParameter publicKeyParam = (AsymmetricKeyParameter)pemReader.ReadObject();
+
+            // Convert BouncyCastle key to .NET RSAParameters
+            var rsaParams = DotNetUtilities.ToRSAParameters((RsaKeyParameters)publicKeyParam);
+
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                rsa.ImportParameters(rsaParams);
+
+                // Now you can use this rsa instance for cryptographic operations
+                Console.WriteLine("Public key successfully imported into .NET RSA.");
+            }
+        }
+    }
+}
+
+
+
+
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
