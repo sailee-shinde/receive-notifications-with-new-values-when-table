@@ -1,3 +1,26 @@
+using System;
+using System.Text.Json;
+
+class Program
+{
+    static void Main()
+    {
+        string jsonString = @"{ ""name"": ""John"", ""age"": 30 }";
+        
+        using (JsonDocument doc = JsonDocument.Parse(jsonString))
+        {
+            JsonElement root = doc.RootElement;
+            string name = root.GetProperty("name").GetString();
+            int age = root.GetProperty("age").GetInt32();
+
+            Console.WriteLine($"Name: {name}, Age: {age}");
+        }
+    }
+}
+
+
+
+
 
 import * as forge from 'node-forge';
 
