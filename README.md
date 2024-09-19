@@ -1,3 +1,55 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+public class MyModel
+{
+    public string Name { get; set; }
+    public string Secret { get; set; }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        var model = new MyModel { Name = "Sailee", Secret = "TopSecret" };
+
+        var settings = new JsonSerializerSettings
+        {
+            ContractResolver = new CustomContractResolver()
+        };
+
+        string jsonString = JsonConvert.SerializeObject(model, settings);
+        // Output will exclude the "Secret" property based on the custom resolver
+        Console.WriteLine(jsonString);
+    }
+}
+
+public class CustomContractResolver : DefaultContractResolver
+{
+    protected override JsonProperty CreateProperty(System.Reflection.MemberInfo member, MemberSerialization memberSerialization)
+    {
+        JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+        // Dynamically exclude the "Secret" property from serialization
+        if (property.PropertyName == "Secret")
+        {
+            property.ShouldSerialize = _ => false;
+        }
+
+        return property;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 using System;
 using System.Text.Json;
 
