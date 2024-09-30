@@ -1,3 +1,23 @@
+SELECT 
+    referencing.name AS ReferencingObjectName,
+    referencing.type_desc AS ReferencingObjectType,
+    referenced.name AS ReferencedObjectName
+FROM 
+    sys.sql_expression_dependencies AS dependencies
+JOIN 
+    sys.objects AS referencing ON dependencies.referencing_id = referencing.object_id
+JOIN 
+    sys.objects AS referenced ON dependencies.referenced_id = referenced.object_id
+WHERE 
+    referenced.name = 'YourStoredProcedureName' 
+    AND referenced.type = 'P' -- Ensures we're looking for a stored procedure
+ORDER BY 
+    referencing.name;
+
+    
+
+
+
 
 SELECT DISTINCT
     o.name AS ObjectName,
