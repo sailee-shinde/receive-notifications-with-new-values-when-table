@@ -1,3 +1,15 @@
+
+SELECT DISTINCT
+    o.name AS ObjectName,
+    o.type_desc AS ObjectType,
+    m.definition AS ObjectDefinition
+FROM sys.sql_modules m
+JOIN sys.objects o ON m.object_id = o.object_id
+WHERE m.definition LIKE '%YourStoredProcedureName%'
+ORDER BY ObjectName;
+
+
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
