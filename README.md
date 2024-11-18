@@ -1,3 +1,16 @@
+<configuration>
+  <appSettings>
+    <add key="MyKey" value="MyValue" />
+  </appSettings>
+  <connectionStrings>
+    <add name="MyDatabase" connectionString="Server=myServer;Database=myDb;User Id=myUser;Password=myPass;" />
+  </connectionStrings>
+</configuration>
+
+
+
+
+
 using Microsoft.AspNetCore.Mvc;
 using System.Configuration;
 
