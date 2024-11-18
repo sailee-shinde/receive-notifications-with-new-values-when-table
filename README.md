@@ -1,3 +1,30 @@
+using System.Configuration;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Reading appSettings key from web.config
+        string mySetting = ConfigurationManager.AppSettings["MyKey"];
+        Console.WriteLine($"Value from web.config: {mySetting}");
+
+        // Reading connectionStrings key from web.config
+        string connectionString = ConfigurationManager.ConnectionStrings["MyDatabase"]?.ConnectionString;
+        Console.WriteLine($"Connection String: {connectionString}");
+    }
+}
+
+<configuration>
+  <appSettings>
+    <add key="MyKey" value="MyValue" />
+  </appSettings>
+  <connectionStrings>
+    <add name="MyDatabase" connectionString="Server=myServer;Database=myDb;User Id=myUser;Password=myPass;" />
+  </connectionStrings>
+</configuration>
+
+
+
 SELECT 
     referencing.name AS ReferencingObjectName,
     referencing.type_desc AS ReferencingObjectType,
