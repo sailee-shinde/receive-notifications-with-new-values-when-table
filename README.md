@@ -1,3 +1,28 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Configuration;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ConfigController : ControllerBase
+{
+    [HttpGet("getSetting")]
+    public IActionResult GetAppSetting()
+    {
+        // Reading appSettings value from web.config
+        string mySetting = ConfigurationManager.AppSettings["MyKey"];
+        return Ok($"AppSetting Value: {mySetting}");
+    }
+
+    [HttpGet("getConnectionString")]
+    public IActionResult GetConnectionString()
+    {
+        // Reading connectionString from web.config
+        string connectionString = ConfigurationManager.ConnectionStrings["MyDatabase"]?.ConnectionString;
+        return Ok($"Connection String: {connectionString}");
+    }
+}
+
+
 using System.Configuration;
 
 class Program
