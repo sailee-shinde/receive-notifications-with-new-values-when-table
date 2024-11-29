@@ -1,3 +1,20 @@
+<button id="sendDataButton">Send Data and Redirect</button>
+
+<script>
+document.getElementById('sendDataButton').addEventListener('click', function () {
+    const url = "https://example.com/target-url";
+    const params = new URLSearchParams({
+        key1: "value1",
+        key2: "value2"
+    }).toString();
+
+    // Redirect with query parameters
+    window.location.href = `${url}?${params}`;
+});
+</script>
+
+
+
 
 https://example.com/api?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)
 
