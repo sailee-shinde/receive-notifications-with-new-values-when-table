@@ -1,3 +1,55 @@
+<form id="myForm">
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+  <button type="button" id="submitButton">Submit</button>
+</form>
+
+<script>
+document.getElementById('submitButton').addEventListener('click', function () {
+    const form = document.getElementById('myForm');
+
+    // Get form data
+    const formData = new FormData(form);
+
+    // Convert to JSON (if needed)
+    const jsonData = {};
+    formData.forEach((value, key) => {
+        jsonData[key] = value;
+    });
+
+    // Send data to another URL
+    fetch('https://example.com/api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonData), // Send as JSON
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Network response was not ok');
+    })
+    .then(data => {
+        console.log('Success:', data);
+        alert('Data sent successfully!');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while sending data.');
+    });
+});
+</script>
+
+
+
+
+
+
+
 using Aspose.Email;
 
 var filePath = "path-to-your-file.msg";
