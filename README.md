@@ -1,3 +1,24 @@
+using Aspose.Email;
+
+var filePath = "path-to-your-file.msg";
+var message = MailMessage.Load(filePath);
+
+// Access email properties
+Console.WriteLine("Subject: " + message.Subject);
+Console.WriteLine("From: " + message.From);
+Console.WriteLine("To: " + string.Join(", ", message.To));
+Console.WriteLine("Body: " + message.Body);
+
+// Save attachments
+foreach (var attachment in message.Attachments)
+{
+    var fileName = attachment.Name;
+    attachment.Save(fileName);
+    Console.WriteLine($"Attachment saved: {fileName}");
+}
+
+
+
 
 using MimeKit;
 
