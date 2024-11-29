@@ -30,6 +30,40 @@ document.getElementById('sendDataButton').addEventListener('click', async functi
 
 
 
+
+
+
+<button id="sendDataButton">Send Data and Redirect</button>
+
+<script>
+document.getElementById('sendDataButton').addEventListener('click', async function () {
+    const url = "https://example.com/target-url"; // Target URL
+    const data = {
+        key1: "This is a large body of data that could include JSON objects or long text.",
+        key2: "Another large string or data field.",
+        key3: "Additional data."
+    };
+
+    // Send POST request with fetch
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+
+    // Redirect after successful POST
+    if (response.ok) {
+        window.location.href = "https://example.com/redirect-url"; // Redirect URL
+    } else {
+        console.error("Failed to send data:", response.statusText);
+    }
+});
+</script>
+
+
+
 <button id="sendDataButton">Send Data and Redirect</button>
 
 <script>
