@@ -1,3 +1,35 @@
+
+using MimeKit;
+
+var filePath = "path-to-your-file.eml";
+var message = MimeMessage.Load(filePath);
+
+// Access email properties
+Console.WriteLine("Subject: " + message.Subject);
+Console.WriteLine("From: " + string.Join(", ", message.From));
+Console.WriteLine("To: " + string.Join(", ", message.To));
+Console.WriteLine("Body: " + message.TextBody);
+
+
+using MsgReader;
+using MsgReader.Outlook;
+
+var filePath = "path-to-your-file.msg";
+using (var msgReader = new Reader())
+{
+    var email = msgReader.ExtractEmail(filePath);
+
+    // Access email properties
+    Console.WriteLine("Subject: " + email.Subject);
+    Console.WriteLine("From: " + email.Sender);
+    Console.WriteLine("To: " + string.Join(", ", email.Recipients));
+    Console.WriteLine("Body: " + email.BodyText);
+}
+
+
+
+
+
 <configuration>
   <appSettings>
     <add key="MyKey" value="MyValue" />
