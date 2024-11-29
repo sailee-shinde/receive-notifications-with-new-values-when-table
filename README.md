@@ -1,3 +1,6 @@
+
+https://example.com/api?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)
+
 <form id="myForm">
   <label for="name">Name:</label>
   <input type="text" id="name" name="name" required>
