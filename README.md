@@ -1,3 +1,59 @@
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string inputPdf = "input.pdf";
+        string outputPdf = "output.pdf";
+
+        // Extract text from PDF
+        string extractedText = ExtractTextFromPdf(inputPdf);
+
+        // Recreate the PDF with the same content
+        CreatePdf(outputPdf, extractedText);
+
+        Console.WriteLine("PDF processed successfully.");
+    }
+
+    static string ExtractTextFromPdf(string pdfPath)
+    {
+        using (PdfReader reader = new PdfReader(pdfPath))
+        using (PdfDocument pdfDoc = new PdfDocument(reader))
+        {
+            var text = new System.Text.StringBuilder();
+            for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++)
+            {
+                text.Append(PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(i)));
+            }
+            return text.ToString();
+        }
+    }
+
+    static void CreatePdf(string outputPath, string text)
+    {
+        using (PdfWriter writer = new PdfWriter(outputPath))
+        using (PdfDocument pdfDoc = new PdfDocument(writer))
+        {
+            pdfDoc.AddNewPage();
+            using (var canvas = new iText.Kernel.Pdf.Canvas.PdfCanvas(pdfDoc.GetFirstPage()))
+            {
+                canvas.BeginText();
+                canvas.SetFontAndSize(iText.IO.Font.FontProgramFactory.CreateFont(), 12);
+                canvas.MoveText(50, 800); // Starting position
+                canvas.ShowText(text);
+                canvas.EndText();
+            }
+        }
+    }
+}
+
+
+
+
+
+
 As discussed, I have attached the HTML file, and the required data has been added to the Excel sheet. Kindly check.
 
 
