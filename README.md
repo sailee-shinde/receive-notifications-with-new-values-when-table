@@ -1,3 +1,54 @@
+[ApiController]
+[Route("api/files")]
+public class FileController : ControllerBase
+{
+    private readonly string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+
+    public FileController()
+    {
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+    }
+
+    [HttpPost("upload")]
+    public IActionResult Upload(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        var filePath = Path.Combine(uploadPath, file.FileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            file.CopyTo(stream);
+        }
+
+        return Ok(new { FilePath = filePath });
+    }
+
+    [HttpGet("download")]
+    public IActionResult Download(string fileName)
+    {
+        var filePath = Path.Combine(uploadPath, fileName);
+
+        if (!System.IO.File.Exists(filePath))
+        {
+            return NotFound("File not found.");
+        }
+
+        var contentType = "application/pdf";
+        var fileBytes = System.IO.File.ReadAllBytes(filePath);
+        return File(fileBytes, contentType, fileName);
+    }
+}
+
+
+
+
+
+
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 
