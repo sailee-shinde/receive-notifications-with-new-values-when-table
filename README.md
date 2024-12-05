@@ -1,3 +1,160 @@
+Sample Code
+Here's a simple implementation:
+
+Step 1: Upload and Save File to Database
+csharp
+Copy code
+[HttpPost]
+public async Task<IActionResult> UploadFile(IFormFile file)
+{
+    if (file != null && file.Length > 0)
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            await file.CopyToAsync(memoryStream);
+            byte[] fileData = memoryStream.ToArray();
+
+            // Save to database
+            using (var connection = new SqlConnection("YourConnectionString"))
+            {
+                string query = "INSERT INTO Files (FileName, FileData) VALUES (@FileName, @FileData)";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@FileName", file.FileName);
+                    command.Parameters.AddWithValue("@FileData", fileData);
+
+                    connection.Open();
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+        return Ok("File uploaded successfully.");
+    }
+    return BadRequest("No file uploaded.");
+}
+Step 2: Retrieve File and Download
+csharp
+Copy code
+[HttpGet("{id}")]
+public async Task<IActionResult> DownloadFile(int id)
+{
+    using (var connection = new SqlConnection("YourConnectionString"))
+    {
+        string query = "SELECT FileName, FileData FROM Files WHERE Id = @Id";
+        using (var command = new SqlCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@Id", id);
+
+            connection.Open();
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                if (reader.Read())
+                {
+                    string fileName = reader["FileName"].ToString();
+                    byte[] fileData = (byte[])reader["FileData"];
+
+                    return File(fileData, "application/octet-stream", fileName);
+                }
+            }
+        }
+    }
+    return NotFound("File not found.");
+}
+Database Table Schema
+sql
+Copy code
+CREATE TABLE Files (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    FileName NVARCHAR(255) NOT NULL,
+    FileData VARBINARY(MAX) NOT NULL
+);
+This code allows you to:
+
+Upload a file and save it in the database.
+Retrieve and recreate the file for downloading.
+Let me know if you need further customization or explanation!
+
+
+
+
+
+You said:
+Single page application in angular17 give me command for creating module, component, routing 
+ChatGPT said:
+ChatGPT
+To create a Single Page Application (SPA) in Angular 17, follow these steps using Angular CLI commands:
+
+Step 1: Set Up Angular Application
+bash
+Copy code
+ng new my-angular-app
+cd my-angular-app
+When prompted:
+
+Choose Routing: Yes
+CSS Framework: Select your preferred option (e.g., CSS, SCSS).
+Step 2: Generate Modules
+For a modular structure, generate feature modules:
+
+bash
+Copy code
+ng generate module feature-name --routing
+Example:
+
+bash
+Copy code
+ng generate module users --routing
+ng generate module products --routing
+Step 3: Generate Components
+Create components for each module:
+
+bash
+Copy code
+ng generate component feature-name/component-name
+Example:
+
+bash
+Copy code
+ng generate component users/user-list
+ng generate component products/product-list
+Step 4: Configure Routing
+Edit app-routing.module.ts to define routes for the modules:
+
+typescript
+Copy code
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+const routes: Routes = [
+  { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule) },
+  { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
+  { path: '', redirectTo: '/users', pathMatch: 'full' },
+  { path: '**', redirectTo: '/users' }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+Configure routing inside each feature module, e.g., users-routing.module.ts:
+
+typescript
+Copy code
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { UserListComponent } from './user-list/user-list.component';
+
+const routes: Routes = [
+  { path: '', component
+
+
+
+
+  
+
+
+
 [ApiController]
 [Route("api/files")]
 public class FileController : ControllerBase
