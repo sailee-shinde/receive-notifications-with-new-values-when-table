@@ -1,3 +1,12 @@
+Zomato leverages AI to deliver customized recommendations based on users' preferences, order history, and location.
+
+
+Zomato uses algorithms to optimize routes for faster delivery and reduce wait times.
+
+
+Advanced automation technologies help streamline warehouse operations, improving inventory management and order fulfillment.
+
+
 Case Study: Zomato – Dynamic Technological Changes
 
 Introduction:
